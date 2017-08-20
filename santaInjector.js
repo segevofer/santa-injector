@@ -16,6 +16,19 @@
             _.get(window, 'testApi.editorAPI;');
     }
 
+    function loadEagerly(){
+        const MAGIC_NUMBER = 66 //because on a blank site we get 66 of those today. There must be a cleverer way though. What we really want is `isSiteFullyLoaded` boolean
+        if (Object.keys(require.s.contexts._.defined).filter(key => /^\w+$/.test(key)).length < MAGIC_NUMBER) {
+            setTimeout(loadEagerly, 300)
+        } else {
+            Object.keys(require.s.contexts._.defined).filter(key => /^\w+$/.test(key)).forEach(key => {
+                if (!window[key]){
+                    window[key] = require.s.contexts._.defined[key]
+                }
+            })
+        }
+    }
+
     function init() {
         loadAsync('react', 'React');
         loadAsync('reactDOM', 'ReactDOM');
@@ -24,6 +37,7 @@
         loadAsync('core', 'core', ['constants']);
         loadAsync('util', 'util', ['translate']);
         loadAsync('utils', 'utils');
+        loadEagerly()
 
         /** Add other stuff here */
     }
